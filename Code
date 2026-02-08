@@ -1,0 +1,24 @@
+//@version=5
+strategy("Shock Momentum Detector", overlay=true, margin_long=1, margin_short=1)
+
+// Inputs
+percentMove = input.float(4, "Shock Threshold (%)", step=0.5)
+barsLookback = input.int(6, "Lookback Bars", minval=2)
+
+// Calculate percentage change over N bars
+pctChange = (close - close[barsLookback]) / close[barsLookback] * 100
+
+// Conditions
+shockUp   = pctChange >= percentMove
+shockDown = pctChange <= -percentMove
+
+// Plot signals
+plotchar(shockUp, title="Shock Up", char="▲", location=location.belowbar, color=color.green, size=size.large)
+plotchar(shockDown, title="Shock Down", char="▼", location=location.abovebar, color=color.red, size=size.large)
+
+// Strategy entries
+if shockUp
+    strategy.entry("Sell Shock", strategy.short)
+
+if shockDown
+    strategy.entry("Buy Shock", strategy.long)
